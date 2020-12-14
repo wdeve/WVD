@@ -15,7 +15,6 @@ function Set-Module{
         exit
     }
 }
-#test
 function Remove-Pester{
     #Remove the default Pester install
     $modulePath = "C:\Program Files\WindowsPowerShell\Modules\Pester"
@@ -28,7 +27,7 @@ function Remove-Pester{
     icacls $modulePath /grant Administrators:'F' /inheritance:d /T
     Remove-Item -Path $modulePath -Recurse -Force -Confirm:$false
 }
-
+#test
 Remove-Pester
 
 Set-Module -ModuleName Az 
