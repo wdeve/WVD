@@ -12,4 +12,4 @@ pool:
 steps:
 - task: gitsync@1
   inputs:
-    GitRepoUrl: 'https://7048b3b62864874933eee26e8e860e679afe14e1@github.com/wdeve/WVD'
+    GitRepoUrl: 'https://49aabbe3b8ab4a43d12f2230fe9b0d5e73f804af@github.com/wdeve/WVD'
