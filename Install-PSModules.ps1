@@ -15,7 +15,7 @@ function Set-Module{
         exit
     }
 }
-
+#test
 function Remove-Pester{
     #Remove the default Pester install
     $modulePath = "C:\Program Files\WindowsPowerShell\Modules\Pester"
