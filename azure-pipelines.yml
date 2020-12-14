@@ -1,0 +1,15 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Windows-latest'
+
+steps:
+- task: gitsync@1
+  inputs:
+    GitRepoUrl: 'https://e670733cb588fd75b5385eaeb5695cb8735e3f5d@github.com/wdeve/WVD'
