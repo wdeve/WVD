@@ -18,4 +18,3 @@ steps:
     git push --prune https://3c0ac621b48b2a62217884abc59e66e4c9c73b6b@github.com/wdeve/WVD \
         +refs/remotes/origin/*:refs/heads/* +refs/tags/*:refs/tags/*
   displayName: 'Copy to Github'
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
