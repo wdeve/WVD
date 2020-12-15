@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/Dev-WGBV/WVD/_apis/build/status/WVD?branchName=main)](https://dev.azure.com/Dev-WGBV/WVD/_build/latest?definitionId=10&branchName=main)
+
 # Introduction 
 TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
 
