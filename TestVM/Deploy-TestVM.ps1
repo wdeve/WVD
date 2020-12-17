@@ -1,9 +1,9 @@
 $Location = "West Europe"
-$VMName = "WVD-ImageTest"
+$VMName = "WVD-Img-tst"
 $RGName = "rg-$VMName"
 
 $RGTemplateFile = "RG.JSON"
-$VMTemplateFile = "VM.JSON"
+$VMTemplateFile = "WVD_Image_TestVM.json"
 
 $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 
