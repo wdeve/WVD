@@ -80,9 +80,7 @@ do {
 Get-AzImageBuilderTemplate -ImageTemplateName  $imageTemplateName -ResourceGroupName $imageResourceGroup | Select-Object -ExpandProperty LastRunStatus| Select-Object -ExpandProperty Message
 
 
-Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages |
-  Where-Object RegistrationState -ne Registered |
-    Register-AzResourceProvider
+Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages | Where-Object RegistrationState -ne Registered | Register-AzResourceProvider
 
 New-AzImageBuilderTemplate -Source
 
