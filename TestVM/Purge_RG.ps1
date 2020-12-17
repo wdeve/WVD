@@ -1,4 +1,4 @@
-$VMName = "WVD-ImageTest"
+$VMName = "WVD-Img-tst"
 $RGName = "rg-$VMName"
 $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 
