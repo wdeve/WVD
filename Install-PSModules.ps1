@@ -5,7 +5,7 @@ function Set-Module{
     )
     Get-PackageProvider -Name NuGet -ForceBootstrap | Out-Null
     #If the module isn't installed install module
-    if(-not(Get-InstalledModule $ModuleName -ErrorAction SilentlyContinue)){Install-Module -Name $ModuleName -Scope CurrentUser -Force}
+    if(-not(Get-InstalledModule $ModuleName -ErrorAction SilentlyContinue)){Install-Module -Name $ModuleName -Scope AllUsers -Force}
     #If the module isn't imported import module
     if(-not(Get-Module $ModuleName )){Import-Module $ModuleName -Force}
     #Verify the installation of the module
