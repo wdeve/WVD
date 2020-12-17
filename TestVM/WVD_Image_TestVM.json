@@ -18,6 +18,7 @@
     },
     "functions": [],
     "variables": {
+        "Location": "[resourceGroup().location]",
         "STGAccountName": "[tolower(concat('st',replace(parameters('VMName'),'-',''), uniqueString(resourceGroup().id)))]",
         
         "VNETName": "[concat('vnet-',parameters('VMName'))]",
@@ -36,7 +37,7 @@
             "name": "[variables('STGAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
-            "location": "[resourceGroup().location]",
+            "location": "[variables('Location')]",
             "kind": "StorageV2",
             "sku": {
                 "name": "Standard_LRS",
@@ -47,7 +48,7 @@
             "name": "[variables('NSGName')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-11-01",
-            "location": "[resourceGroup().location]",
+            "location": "[variables('Location')]",
             "properties": {
                 "securityRules": [
                     {
@@ -71,7 +72,7 @@
             "name": "[variables('PIPName')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-11-01",
-            "location": "[resourceGroup().location]",
+            "location": "[variables('Location')]",
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
@@ -83,7 +84,7 @@
             "name": "[variables('VNETName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-11-01",
-            "location": "[resourceGroup().location]",
+            "location": "[variables('Location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
             ],
@@ -111,7 +112,7 @@
             "name": "[variables('NICName')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
-            "location": "[resourceGroup().location]",
+            "location": "[variables('Location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('VNETName'))]",
                 "[resourceId('Microsoft.Network/publicIPAddresses', variables('PIPName'))]"
@@ -137,7 +138,7 @@
             "name": "[parameters('VMName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
-            "location": "[resourceGroup().location]",
+            "location": "[variables('Location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', toLower(variables('STGAccountName')))]",
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('VNETName'))]",
@@ -154,10 +155,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "VTM_Dev_01",
-                        "offer": "Windows",
-                        "sku": "Windows10WVD",
-                        "version": "latest"
+                        "id": "[resourceId('Microsoft.Compute/galleries/images/versions', 'SharedGalaryTest_WVD_Image', 'ImageTest_WVD_Image', '0.24539.15443')]"
                     },
                     "osDisk": {
                         "name": "[concat(parameters('VMName'),'-OSDisk')]",
