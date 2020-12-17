@@ -11,47 +11,6 @@
     },
     "resources": [
         {
-            "type": "Microsoft.Compute/galleries",
-            "name": "[concat('SharedGalary',parameters('imageTemplateName'))]",
-            "apiVersion": "2019-03-01",
-            "location": "[variables('location')]",
-            "properties": {
-                "description": "My Private Gallery"
-            },
-            "resources": [
-                { 
-                    "type": "images",
-                    "name": "[concat('Image',parameters('imageTemplateName'))]",
-                    "apiVersion": "2019-03-01",
-                    "location": "[variables('location')]",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Compute/galleries', concat('SharedGalary',parameters('imageTemplateName')))]"
-                    ],
-                    "properties": {
-                        "description": "Sample Gallery Image Description",
-                        "osType": "Windows",
-                        "osState": "Generalized",
-                        "endOfLifeDate": "2030-12-24T12:00:00+00:00",
-                        "identifier": {
-                        "publisher": "VTM_Dev_01",
-                        "offer": "Windows",
-                        "sku": "Windows10WVD"
-                        },
-                        "recommended": {
-                            "vCPUs": {
-                                "min": 1,
-                                "max": 1
-                            },
-                            "memory": {
-                                "min": 1024,
-                                "max": 4096
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        {
             "name": "[parameters('imageTemplateName')]",
             "type": "Microsoft.VirtualMachineImages/imageTemplates",
             "apiVersion": "2020-02-14",
