@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name for the WVD workspace"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {
+        "Location": "[resourceGroup().id]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DesktopVirtualization/workspaces",
+            "apiVersion": "2020-10-19-preview",
+            "name": "[parameters('workspaceName')]",
+            "location": "[variables('Location')]",
+            "properties": {}
+        }
+    ],
+    "outputs": {}
+}
