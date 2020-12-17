@@ -24,6 +24,9 @@
                     "name": "[concat('Image',parameters('imageTemplateName'))]",
                     "apiVersion": "2019-03-01",
                     "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Compute/galleries', concat('SharedGalary',parameters('imageTemplateName')))]"
+                    ],
                     "properties": {
                         "description": "Sample Gallery Image Description",
                         "osType": "Windows",
@@ -53,7 +56,9 @@
             "type": "Microsoft.VirtualMachineImages/imageTemplates",
             "apiVersion": "2020-02-14",
             "location": "[variables('location')]",
-            "dependsOn": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/galleries/images', concat('SharedGalary',parameters('imageTemplateName')), concat('Image',parameters('imageTemplateName')))]"
+            ],
             "tags": {
                 "imagebuilderTemplate": "Windows1020H2",
                 "userIdentity": "enabled"
@@ -108,14 +113,14 @@
                     },
                     {
                         "type": "WindowsRestart",
-                        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\buildArtifacts\\azureImageBuilderRestart.txt",
+                        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM",
                         "restartTimeout": "10m"
                     }
                 ],
                 "distribute": [
                     {
                         "type": "SharedImage",
-                        "galleryImageId": "[resourceId('Microsoft.Compute/galleries/images', concat('SharedGalary',parameters('imageTemplateName')))]",
+                        "galleryImageId": "[resourceId('Microsoft.Compute/galleries/images', concat('SharedGalary',parameters('imageTemplateName')), concat('Image',parameters('imageTemplateName')))]",
                         "runOutputName": "[concat(parameters('imageTemplateName'), uniqueString(resourceGroup().id))]",
                         "replicationRegions": [
                            "[variables('location')]"
