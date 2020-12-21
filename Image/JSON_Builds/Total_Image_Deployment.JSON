@@ -1,0 +1,229 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {
+        "Location": "West Europe",
+        "imageTemplateName": "Test_WVD_Image",
+        "RoledefName": "Azure_Image_builder",
+        "RoleAssignmentName": "Azure_Image_builder_ManagedID",
+        "RoleAssignmentName1": "[guid(subscription().id, variables('RoleAssignmentName'))]",
+        "UserAssignedIdName": "WVD_ImageBuilder",
+        "RoleName": "[guid(subscription().id, variables('RoledefName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2020-06-01",
+            "name": "Images",
+            "location": "[variables('Location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Authorization/roleDefinitions",
+            "apiVersion": "2018-01-01-preview",
+            "Name": "[variables('RoleName')]",
+            "properties": {
+                "roleName": "[variables('RoledefName')]",
+                "description": "Image Builder access to create resources for the image build, you should delete or split out as appropriate",
+                "type": "customRole",
+                "isCustom": true,
+                "permissions": [
+                    {
+                        "Actions": [
+                            "Microsoft.Compute/galleries/read",
+                            "Microsoft.Compute/galleries/images/read",
+                            "Microsoft.Compute/galleries/images/versions/read",
+                            "Microsoft.Compute/galleries/images/versions/write",
+                            "Microsoft.Compute/images/write",
+                            "Microsoft.Compute/images/read",
+                            "Microsoft.Compute/images/delete"
+                        ],
+                        "notActions": []
+                    }
+                ],
+                "assignableScopes": [
+                    "[resourceId('Microsoft.Resources/resourceGroups','Images')]",
+                    "[resourceId('Microsoft.Resources/resourceGroups','ManagedIdentities')]"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "storageDeployment",
+            "resourceGroup": "ManagedIdentities",
+            "dependsOn": [
+                "[resourceId('Microsoft.Authorization/roleDefinitions',variables('RoleName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "[variables('UserAssignedIdName')]",
+                            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+                            "apiVersion": "2018-11-30",
+                            "location": "[variables('Location')]"
+                        },
+                        {
+                            "type": "Microsoft.Authorization/roleAssignments",
+                            "apiVersion": "2020-04-01-preview",
+                            "dependsOn": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('UserAssignedIdName'))]",
+                            "name": "[variables('RoleAssignmentName1')]",
+                            "properties": {
+                                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('RoleName'))]",
+                                "principalId": "[deployment()]"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-06-01",
+            "name": "ImageDeployment",
+            "resourceGroup": "Images",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', 'Images')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Compute/galleries",
+                            "name": "[concat('SharedGalary',variables('imageTemplateName'))]",
+                            "apiVersion": "2019-03-01",
+                            "location": "[variables('location')]",
+                            "properties": {
+                                "description": "My Private Gallery"
+                            },
+                            "resources": [
+                                {
+                                    "type": "images",
+                                    "name": "[concat('Image',variables('imageTemplateName'))]",
+                                    "apiVersion": "2019-03-01",
+                                    "location": "[variables('location')]",
+                                    "dependsOn": [
+                                        "[resourceId('Microsoft.Compute/galleries', concat('SharedGalary',variables('imageTemplateName')))]"
+                                    ],
+                                    "properties": {
+                                        "description": "Sample Gallery Image Description",
+                                        "osType": "Windows",
+                                        "osState": "Generalized",
+                                        "endOfLifeDate": "2030-12-24T12:00:00+00:00",
+                                        "identifier": {
+                                            "publisher": "VTM_Dev_01",
+                                            "offer": "Windows",
+                                            "sku": "Windows10WVD"
+                                        },
+                                        "recommended": {
+                                            "vCPUs": {
+                                                "min": 1,
+                                                "max": 1
+                                            },
+                                            "memory": {
+                                                "min": 1024,
+                                                "max": 4096
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "[variables('imageTemplateName')]",
+                            "type": "Microsoft.VirtualMachineImages/imageTemplates",
+                            "apiVersion": "2020-02-14",
+                            "location": "[variables('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Compute/galleries/images', concat('SharedGalary',variables('imageTemplateName')), concat('Image',variables('imageTemplateName')))]"
+                            ],
+                            "tags": {
+                                "imagebuilderTemplate": "Windows1020H2",
+                                "userIdentity": "enabled"
+                            },
+                            "identity": {
+                                "type": "UserAssigned",
+                                "userAssignedIdentities": {
+                                    "/subscriptions/a854bf7e-1346-4c47-8c01-b629e5f43323/resourcegroups/ManagedIdentities/providers/Microsoft.ManagedIdentity/userAssignedIdentities/WVD_ImageBuilder": {}
+                                }
+                            },
+                            "properties": {
+                                "buildTimeoutInMinutes": 100,
+                                "vmProfile": {
+                                    "vmSize": "Standard_B1ms",
+                                    "osDiskSizeGB": 127
+                                },
+                                "source": {
+                                    "type": "PlatformImage",
+                                    "publisher": "microsoftwindowsdesktop",
+                                    "offer": "office-365",
+                                    "sku": "20h2-evd-o365pp",
+                                    "version": "latest"
+                                },
+                                "customize": [
+                                    {
+                                        "type": "PowerShell",
+                                        "inline": [
+                                            "New-Item -Path HKLM:\\Software\\Microsoft\\DesiredStateConfiguration",
+                                            "New-ItemProperty -Path HKLM:\\Software\\Microsoft\\DesiredStateConfiguration -Name 'AgentId' -PropertyType STRING -Force"
+                                        ]
+                                    },
+                                    {
+                                        "type": "PowerShell",
+                                        "name": "settingUpFirewall",
+                                        "inline": [
+                                            "Set-NetFirewallProfile -Profile 'Domain','Public','Private' -Enabled False"
+                                        ],
+                                        "runElevated": true
+                                    },
+                                    {
+                                        "type": "PowerShell",
+                                        "name": "Intalling Powershell Modules",
+                                        "scriptUri": "https://raw.githubusercontent.com/wdeve/WVD/main/Image/SetupPSSCripts/Install-PSModules.ps1",
+                                        "runElevated": true
+                                    },
+
+                                    {
+                                        "type": "PowerShell",
+                                        "name": "Install_FSLogix",
+                                        "scriptUri": "https://raw.githubusercontent.com/wdeve/WVD/main/Image/SetupPSSCripts/Install-FSLogix.ps1",
+                                        "runElevated": true
+                                    },
+                                    {
+                                        "type": "WindowsRestart",
+                                        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM",
+                                        "restartTimeout": "10m"
+                                    }
+                                ],
+                                "distribute": [
+                                    {
+                                        "type": "SharedImage",
+                                        "galleryImageId": "[resourceId('Microsoft.Compute/galleries/images', concat('SharedGalary',variables('imageTemplateName')), concat('Image',variables('imageTemplateName')))]",
+                                        "runOutputName": "[concat(variables('imageTemplateName'), uniqueString(subscription().id))]",
+                                        "replicationRegions": [
+                                            "[variables('location')]"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "outputs": {}
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
