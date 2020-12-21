@@ -73,7 +73,9 @@
                         {
                             "type": "Microsoft.Authorization/roleAssignments",
                             "apiVersion": "2020-04-01-preview",
-                            "dependsOn": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('UserAssignedIdName'))]",
+                            "dependsOn": [
+                            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('UserAssignedIdName'))]"
+                            ], 
                             "name": "[variables('RoleAssignmentName1')]",
                             "properties": {
                                 "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('RoleName'))]",
@@ -101,53 +103,11 @@
                     "variables": {},
                     "resources": [
                         {
-                            "type": "Microsoft.Compute/galleries",
-                            "name": "[concat('SharedGalary',variables('imageTemplateName'))]",
-                            "apiVersion": "2019-03-01",
-                            "location": "[variables('location')]",
-                            "properties": {
-                                "description": "My Private Gallery"
-                            },
-                            "resources": [
-                                {
-                                    "type": "images",
-                                    "name": "[concat('Image',variables('imageTemplateName'))]",
-                                    "apiVersion": "2019-03-01",
-                                    "location": "[variables('location')]",
-                                    "dependsOn": [
-                                        "[resourceId('Microsoft.Compute/galleries', concat('SharedGalary',variables('imageTemplateName')))]"
-                                    ],
-                                    "properties": {
-                                        "description": "Sample Gallery Image Description",
-                                        "osType": "Windows",
-                                        "osState": "Generalized",
-                                        "endOfLifeDate": "2030-12-24T12:00:00+00:00",
-                                        "identifier": {
-                                            "publisher": "VTM_Dev_01",
-                                            "offer": "Windows",
-                                            "sku": "Windows10WVD"
-                                        },
-                                        "recommended": {
-                                            "vCPUs": {
-                                                "min": 1,
-                                                "max": 1
-                                            },
-                                            "memory": {
-                                                "min": 1024,
-                                                "max": 4096
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        },
-                        {
                             "name": "[variables('imageTemplateName')]",
                             "type": "Microsoft.VirtualMachineImages/imageTemplates",
                             "apiVersion": "2020-02-14",
                             "location": "[variables('location')]",
                             "dependsOn": [
-                                "[resourceId('Microsoft.Compute/galleries/images', concat('SharedGalary',variables('imageTemplateName')), concat('Image',variables('imageTemplateName')))]"
                             ],
                             "tags": {
                                 "imagebuilderTemplate": "Windows1020H2",
@@ -209,12 +169,10 @@
                                 ],
                                 "distribute": [
                                     {
-                                        "type": "SharedImage",
-                                        "galleryImageId": "[resourceId('Microsoft.Compute/galleries/images', concat('SharedGalary',variables('imageTemplateName')), concat('Image',variables('imageTemplateName')))]",
-                                        "runOutputName": "[concat(variables('imageTemplateName'), uniqueString(subscription().id))]",
-                                        "replicationRegions": [
-                                            "[variables('location')]"
-                                        ]
+                                        "type": "ManagedImage",
+                                        "imageId": "/subscriptions/a854bf7e-1346-4c47-8c01-b629e5f43323/resourceGroups/Images/providers/Microsoft.Compute/images/Test_WVD_Image",
+                                        "location": "[variables('Location')]",
+                                        "runOutputName": "win1020h2ManImg01ro"
                                     }
                                 ]
                             }
