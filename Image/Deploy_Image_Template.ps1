@@ -2,7 +2,7 @@ $idenityRG = "ManagedIdentities"
 $idenityName = "WVD_ImageBuilder"
 $subscriptionID = (Get-AzContext).Subscription.Id
 $roledefFile = "$env:TEMP/AZRoleDef.Json"
-$ImageTemplateFile = "ImageTemplate.JSON"
+$ImageTemplateFile = ".\Image\JSON_Builds\ImageTemplate_Initial.JSON"
 
 $imageResourceGroup = "Images"
 $location = "West Europe"
@@ -30,7 +30,7 @@ Add-Content -Path $roledefFile -Value @"
     ]
 }
 "@
-New-AzResourceGroup -Name "$imageResourceGroup" -Location $Location 
+New-AzResourceGroup -Name "$imageResourceGroup" -Location $Location -Force
 
 New-AzUserAssignedIdentity -Name "WVD_ImageBuilder" -ResourceGroupName $idenityRG
 
@@ -88,11 +88,12 @@ New-AzImageBuilderTemplate -Source
 
 
 
+Get-AzRoleAssignment -RoleDefinitionName "Azure Image builder" | Remove-AzRoleAssignment
+Remove-AzUserAssignedIdentity -Name "WVD_ImageBuilder" -ResourceGroupName $idenityRG -Force
+Remove-AzRoleDefinition -Name "Azure Image builder" -Force
+
 #Envoirment cleanup
 $RGs = Get-AzResourceGroup
 $RGs | Where-Object {$_.ResourceGroupName -like "IT_Images_Test_WVD_Image"} | Remove-AzResourceGroup -Force
 $RGs | Where-Object {$_.ResourceGroupName -eq "Images"} | Remove-AzResourceGroup -Force
 ##Remove-AzResourceGroup ImageBuilderRG -Force
-
-Remove-AzUserAssignedIdentity -Name "WVD_ImageBuilder" -ResourceGroupName $idenityRG -Force
-Remove-AzRoleDefinition -Name "Azure Image builder" -Force
