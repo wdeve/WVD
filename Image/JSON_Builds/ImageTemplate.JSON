@@ -60,14 +60,14 @@
                     {
                         "type": "PowerShell",
                         "name": "Intalling Powershell Modules",
-                        "scriptUri": "https://raw.githubusercontent.com/wdeve/WVD/main/Install-PSModules.ps1",
+                        "scriptUri": "https://raw.githubusercontent.com/wdeve/WVD/main/Image/SetupPSSCripts/Install-PSModules.ps1",
                         "runElevated": true
                     },
                     
                     {
                         "type": "PowerShell",
                         "name": "Install_FSLogix",
-                        "scriptUri": "https://raw.githubusercontent.com/michawets/AzureImageBuilderPOC/master/scripts/install_FSLogix.ps1",
+                        "scriptUri": "https://raw.githubusercontent.com/wdeve/WVD/main/Image/SetupPSSCripts/Install-FSLogix.ps1",
                         "runElevated": true
                     },
                     {
@@ -79,7 +79,7 @@
                 "distribute": [
                     {
                         "type": "SharedImage",
-                        "galleryImageId": "[resourceId('Microsoft.Compute/galleries/images', concat('SharedGalary',parameters('imageTemplateName')), concat('Image',parameters('imageTemplateName')))]",
+                        "galleryImageId": "/subscriptions/a854bf7e-1346-4c47-8c01-b629e5f43323/resourceGroups/Images/providers/Microsoft.Compute/galleries/SharedGalaryTest_WVD_Image/images/ImageTest_WVD_Image",
                         "runOutputName": "[concat(parameters('imageTemplateName'), uniqueString(resourceGroup().id))]",
                         "replicationRegions": [
                            "[variables('location')]"

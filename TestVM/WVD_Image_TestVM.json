@@ -155,7 +155,7 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "id": "[resourceId('Microsoft.Compute/galleries/images/versions', 'SharedGalaryTest_WVD_Image', 'ImageTest_WVD_Image', '0.24539.15443')]"
+                        "id": "[resourceId('Microsoft.Compute/galleries/images/versions', 'SharedGalaryTest_WVD_Image', 'ImageTest_WVD_Image', '0.24544.30299')]"
                     },
                     "osDisk": {
                         "name": "[concat(parameters('VMName'),'-OSDisk')]",
