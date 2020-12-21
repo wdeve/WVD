@@ -68,6 +68,12 @@
                         "runElevated": true
                     },
                     {
+                        "type": "PowerShell",
+                        "name": "Install_WindowsTerminal",
+                        "scriptUri": "https://raw.githubusercontent.com/wdeve/WVD/main/Image/SetupPSSCripts/Install-WindowsTerminal.ps1",
+                        "runElevated": true
+                    },
+                    {
                         "type": "WindowsRestart",
                         "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM",
                         "restartTimeout": "10m"
