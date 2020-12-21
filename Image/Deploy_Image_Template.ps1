@@ -2,7 +2,7 @@ $idenityRG = "ManagedIdentities"
 $idenityName = "WVD_ImageBuilder"
 $subscriptionID = (Get-AzContext).Subscription.Id
 $roledefFile = "$env:TEMP/AZRoleDef.Json"
-$ImageTemplateFile = ".\Image\JSON_Builds\ImageTemplate_Initial.JSON"
+$ImageTemplateFile = "Image\JSON_Builds\ImageTemplate_ManagedImageD.JSON"
 
 $imageResourceGroup = "Images"
 $location = "West Europe"
